@@ -6,51 +6,51 @@ on:
   workflow_dispatch:
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Build application
-  #       uses: ./.github/actions/build
-  #       with:
-  #         GH_TOKEN: "${{ secrets.GH_TOKEN}}"
+      - name: Build application
+        uses: ./.github/actions/build
+        with:
+          GH_TOKEN: "${{ secrets.GH_TOKEN}}"
 
-  # sanity:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
+  sanity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Sanity Check
-  #       uses: ./.github/actions/sanity
-  #       with:
-  #         GH_TOKEN: "${{ secrets.GH_TOKEN}}"
+      - name: Sanity Check
+        uses: ./.github/actions/sanity
+        with:
+          GH_TOKEN: "${{ secrets.GH_TOKEN}}"
 
-  # test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Run unit test
-  #       uses: ./.github/actions/test
-  #       with:
-  #         GH_TOKEN: "${{ secrets.GH_TOKEN}}"
+      - name: Run unit test
+        uses: ./.github/actions/test
+        with:
+          GH_TOKEN: "${{ secrets.GH_TOKEN}}"
 
-  # approval:
-  #   runs-on: ubuntu-latest
-  #   needs: [build, sanity, test]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Approval required
-  #       uses: ./.github/actions/approval
-  #       with:
-  #         GH_TOKEN: "${{ secrets.GH_TOKEN}}"
-  #         TITLE: 'Release new version'
-  #         BODY: 'Approval required to release new version'
+  approval:
+    runs-on: ubuntu-latest
+    needs: [build, sanity, test]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Approval required
+        uses: ./.github/actions/approval
+        with:
+          GH_TOKEN: "${{ secrets.GH_TOKEN}}"
+          TITLE: 'Release new version'
+          BODY: 'Approval required to release new version'
 
   release:
     runs-on: ubuntu-latest
-    # needs: [approval]
+    needs: [approval]
     steps:
       - uses: actions/checkout@v4
 

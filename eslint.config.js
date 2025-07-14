@@ -7,7 +7,7 @@ module.exports = [
     languageOptions: {
       parser: require('@typescript-eslint/parser'),
       parserOptions: {
-        project: 'tsconfig.json',
+        project: './tsconfig.eslint.json',
         tsconfigRootDir: __dirname,
         sourceType: 'commonjs',
       },
@@ -28,7 +28,7 @@ module.exports = [
       'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }],
       'unused-imports/no-unused-imports': 'error',
     },
-    files: ['src/**/*.ts'],
+    files: ['src/**/*.ts', 'tests/**/*.ts'],
     ignores: ['dist/**/*'],
   },
 ];

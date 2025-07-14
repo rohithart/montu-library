@@ -1,0 +1,19 @@
+name: 'Setup Node.js'
+description: 'Set up Node.js environment'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Read .nvmrc
+      run: |
+        NODE_VERSION=$(cat .nvmrc)
+        echo "NODE_VERSION=${NODE_VERSION}" >> $GITHUB_ENV
+      shell: bash
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Install Dependencies
+      run: yarn install
+      shell: bash

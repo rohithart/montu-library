@@ -7,6 +7,10 @@ inputs:
 runs:
   using: 'composite'
   steps:
+
+    - name: Setup Node.js
+      uses: ./.github/actions/set-up
+
     - name: Run Unit Tests
       run: yarn test:cov
       shell: bash

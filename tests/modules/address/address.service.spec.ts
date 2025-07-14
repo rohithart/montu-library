@@ -9,8 +9,8 @@ import * as tomtomHelper from '../../../src/helpers/tomtom.helper';
 
 vi.mock('../../../src/helpers/tomtom.helper');
 
-const mockedGetSuggestion = tomtomHelper.getSuggestionFromTomTom;
-const mockedMapAddress = tomtomHelper.mapAddressFromTomTom;
+const mockedGetSuggestion = tomtomHelper.getSuggestionFromTomTom as vi.Mock;
+const mockedMapAddress = tomtomHelper.mapAddressFromTomTom as vi.Mock;
 
 describe('AddressService', () => {
   const validOptions: AddressModuleOptions = {

@@ -31,12 +31,10 @@ runs:
         path: reports
 
     - name: Test Report
-      uses: dorny/test-reporter@v1
+      uses: test-summary/action@v2
       if: always()
       with:
-        name: Test Reports
         path: reports/test-results.xml
-        reporter: jest-junit
 
     - name: CodeCov Report
       uses: codecov/codecov-action@v4

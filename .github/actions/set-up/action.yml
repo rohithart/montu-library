@@ -12,7 +12,8 @@ runs:
 
     - uses: actions/setup-node@v4
       with:
-        node-version: ${{ env.NODE_VERSION }}
+        node-version: 20.12.2
+
 
     - name: Install Dependencies
       run: yarn install --immutable

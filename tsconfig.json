@@ -1,18 +1,7 @@
 {
+  "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "baseUrl": "./",
-    "paths": {
-      "src/*": ["src/*"]
-    },
-    "rootDir": "src",
-    "outDir": "./dist",
-    "module": "ES2020",
-    "target": "ES6",
-    "moduleResolution": "node",
-    "declaration": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true
+    "module": "ES2020"
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["tests", "**/*.spec.ts"]
+  "include": ["src/**/*.ts", "tests/**/*.ts", "**/*.spec.ts"]
 }

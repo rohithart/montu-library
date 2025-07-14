@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "module": "ES2020"
+    "module": "Node16"
   },
   "include": ["src/**/*.ts"]
 }

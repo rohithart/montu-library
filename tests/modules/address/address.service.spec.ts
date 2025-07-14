@@ -31,7 +31,7 @@ describe('AddressService', () => {
     data: {
       results: [
         {
-          address: { countryCode: 'AUS', freeformAddress: 'Valid Address' },
+          address: { countryCode: 'AU', freeformAddress: 'Valid Address' },
           position: { lat: 1, lon: 2 },
         },
         {
@@ -84,7 +84,7 @@ describe('AddressService', () => {
     });
   });
 
-  describe('#getSuggestions', () => {
+  describe('#getPOISearchResults', () => {
     let service: AddressService;
 
     beforeEach(() => {
@@ -92,13 +92,13 @@ describe('AddressService', () => {
     });
 
     test('should throw if query is empty or invalid', async () => {
-      await expect(service.getSuggestions('')).rejects.toThrow(
+      await expect(service.getPOISearchResults('')).rejects.toThrow(
         BadRequestException,
       );
-      await expect(service.getSuggestions(null as any)).rejects.toThrow(
+      await expect(service.getPOISearchResults(null as any)).rejects.toThrow(
         BadRequestException,
       );
-      await expect(service.getSuggestions('    ')).rejects.toThrow(
+      await expect(service.getPOISearchResults('    ')).rejects.toThrow(
         BadRequestException,
       );
     });
@@ -106,7 +106,7 @@ describe('AddressService', () => {
     test('should throw if TomTom API call fails', async () => {
       mockedGetSuggestion.mockRejectedValue(new Error('TomTom API failure'));
 
-      await expect(service.getSuggestions('Melbourne')).rejects.toThrow(
+      await expect(service.getPOISearchResults('Melbourne')).rejects.toThrow(
         InternalServerErrorException,
       );
       expect(mockedGetSuggestion).toHaveBeenCalled();
@@ -115,17 +115,17 @@ describe('AddressService', () => {
     test('should throw if TomTom response is invalid or null', async () => {
       mockedGetSuggestion.mockResolvedValue(null);
 
-      await expect(service.getSuggestions('Melbourne')).rejects.toThrow(
+      await expect(service.getPOISearchResults('Melbourne')).rejects.toThrow(
         InternalServerErrorException,
       );
 
       mockedGetSuggestion.mockResolvedValue({ data: null });
-      await expect(service.getSuggestions('Melbourne')).rejects.toThrow(
+      await expect(service.getPOISearchResults('Melbourne')).rejects.toThrow(
         InternalServerErrorException,
       );
 
       mockedGetSuggestion.mockResolvedValue({ data: { results: null } });
-      await expect(service.getSuggestions('Melbourne')).rejects.toThrow(
+      await expect(service.getPOISearchResults('Melbourne')).rejects.toThrow(
         InternalServerErrorException,
       );
     });
@@ -134,7 +134,7 @@ describe('AddressService', () => {
       mockedGetSuggestion.mockResolvedValue(mockApiResultValid);
       mockedMapAddress.mockReturnValue(mappedResultValid);
 
-      const results = await service.getSuggestions('Valid Query');
+      const results = await service.getPOISearchResults('Valid Query');
 
       expect(results).toEqual([mappedResultValid]);
       expect(mockedGetSuggestion).toHaveBeenCalledWith(
@@ -148,7 +148,7 @@ describe('AddressService', () => {
       mockedGetSuggestion.mockResolvedValue(mockApiResultValid);
       mockedMapAddress.mockReturnValue(mappedResultInvalid);
 
-      const results = await service.getSuggestions('Invalid Query');
+      const results = await service.getPOISearchResults('Invalid Query');
 
       expect(results).toEqual([]);
       expect(mockedGetSuggestion).toHaveBeenCalledWith(
@@ -161,7 +161,7 @@ describe('AddressService', () => {
     test('should return empty array if no valid Australian addresses', async () => {
       mockedGetSuggestion.mockResolvedValue(mockApiResultInvalid);
 
-      const results = await service.getSuggestions('Invalid Query');
+      const results = await service.getPOISearchResults('Invalid Query');
       expect(results).toEqual([]);
     });
   });

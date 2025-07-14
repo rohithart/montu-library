@@ -1,5 +1,5 @@
 import { AddressSuggestion } from '../models/AddressSuggestion';
 
 export interface AddressProvider {
-  getSuggestions(query: string): Promise<AddressSuggestion[]>;
+  getPOISearchResults(query: string): Promise<AddressSuggestion[]>;
 }

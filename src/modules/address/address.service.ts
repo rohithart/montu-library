@@ -21,7 +21,7 @@ export class AddressService implements AddressProvider {
     this.validateOptions();
   }
 
-  async getSuggestions(query: string): Promise<AddressSuggestion[]> {
+  async getPOISearchResults(query: string): Promise<AddressSuggestion[]> {
     if (!query || typeof query !== 'string' || !query.trim()) {
       throw new BadRequestException('Query must be a non-empty string.');
     }
@@ -42,7 +42,9 @@ export class AddressService implements AddressProvider {
     }
 
     return response.data.results
-      .filter((result) => result?.address?.countryCode === 'AU')
+      .filter(
+        (result) => result?.address?.countryCode === this.options.countrySet,
+      )
       .map((result) => mapAddressFromTomTom(result))
       .filter((mapped) => !!mapped?.fullAddress);
   }

@@ -42,7 +42,7 @@ export class AddressService implements AddressProvider {
     }
 
     return response.data.results
-      .filter((result) => result?.address?.countryCode === 'AUS')
+      .filter((result) => result?.address?.countryCode === 'AU')
       .map((result) => mapAddressFromTomTom(result))
       .filter((mapped) => !!mapped?.fullAddress);
   }

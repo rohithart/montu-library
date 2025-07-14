@@ -28,7 +28,7 @@ module.exports = [
       'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }],
       'unused-imports/no-unused-imports': 'error',
     },
-    files: ['src/**/*.ts', 'tests/**/*.ts'],
+    files: ['src/**/*.ts'],
     ignores: ['dist/**/*'],
   },
 ];

@@ -1,113 +1,167 @@
-import axios from 'axios';
-import { AddressModuleOptions } from '../../../src/modules/address/AddressModuleOptions';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { AddressService } from '../../../src/modules/address/address.service';
+import { AddressModuleOptions } from '../../../src/modules/address/AddressModuleOptions';
+import * as tomtomHelper from '../../../src/helpers/tomtom.helper';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+jest.mock('../../../src/helpers/tomtom.helper');
+
+const mockedGetSuggestion = tomtomHelper.getSuggestionFromTomTom as jest.Mock;
+const mockedMapAddress = tomtomHelper.mapAddressFromTomTom as jest.Mock;
 
 describe('AddressService', () => {
-  let addressService: AddressService;
-  let options: AddressModuleOptions;
+  const validOptions: AddressModuleOptions = {
+    apiKey: 'valid-api-key',
+    countrySet: 'AU',
+    limit: 5,
+  };
 
-  beforeEach(() => {
-    options = {
-      apiKey: 'test-api-key',
-      countrySet: 'AU',
-      limit: 5,
-    };
+  const mockApiResultInvalid = {
+    data: {
+      results: [
+        { address: { countryCode: 'NZL' }, position: { lat: 3, lon: 4 } },
+      ],
+    },
+  };
 
-    addressService = new AddressService(options);
-  });
+  const mockApiResultValid = {
+    data: {
+      results: [
+        {
+          address: { countryCode: 'AUS', freeformAddress: 'Valid Address' },
+          position: { lat: 1, lon: 2 },
+        },
+        {
+          address: { countryCode: 'NZL', freeformAddress: 'Invalid Address' },
+          position: { lat: 3, lon: 4 },
+        },
+      ],
+    },
+  };
+
+  const mappedResultValid = {
+    fullAddress: 'Mapped Address',
+    country: 'Australia',
+    municipality: 'Sydney',
+    latitude: 1,
+    longitude: 2,
+  };
+
+  const mappedResultInvalid = {
+    country: 'Australia',
+    municipality: 'Sydney',
+    latitude: 1,
+    longitude: 2,
+  };
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should call TomTom API with correct params and return formatted address suggestions', async () => {
-    const mockApiResponse = {
-      data: {
-        results: [
-          {
-            address: {
-              freeformAddress: '123 Test Street, Sydney, NSW',
-              country: 'Australia',
-              countryCode: 'AUS',
-              municipality: 'Sydney',
-            },
-            position: {
-              lat: -33.865143,
-              lon: 151.209900,
-            },
-          },
-          {
-            address: {
-              freeformAddress: '456 Fake Road, Auckland, NZ',
-              country: 'New Zealand',
-              countryCode: 'NZL',
-              municipality: 'Auckland',
-            },
-            position: {
-              lat: -36.8485,
-              lon: 174.7633,
-            },
-          },
-        ],
-      },
-    };
+  describe('constructor', () => {
+    it('should throw if apiKey is missing', () => {
+      expect(() => new AddressService({ ...validOptions, apiKey: '' })).toThrow(
+        BadRequestException,
+      );
+    });
 
-    mockedAxios.get.mockResolvedValue(mockApiResponse);
+    it('should throw if countrySet is missing', () => {
+      expect(
+        () => new AddressService({ ...validOptions, countrySet: '' }),
+      ).toThrow(BadRequestException);
+    });
 
-    const result = await addressService.getSuggestions('123');
-
-    // Assertions
-    expect(mockedAxios.get).toHaveBeenCalledWith(
-      expect.stringContaining('https://api.tomtom.com/search/2/search/123.json'),
-      {
-        params: {
-          key: options.apiKey,
-          countrySet: options.countrySet,
-          limit: options.limit,
-        },
-      },
-    );
-
-    expect(result).toEqual([
-      {
-        fullAddress: '123 Test Street, Sydney, NSW',
-        country: 'Australia',
-        municipality: 'Sydney',
-        latitude: -33.865143,
-        longitude: 151.209900,
-      },
-    ]);
-
-    // Ensure filtering removed the NZ address
-    expect(result.length).toBe(1);
+    it('should throw if limit is missing or not a number', () => {
+      expect(
+        () => new AddressService({ ...validOptions, limit: '' as any }),
+      ).toThrow(BadRequestException);
+      expect(
+        () => new AddressService({ ...validOptions, limit: '10' as any }),
+      ).toThrow(BadRequestException);
+    });
   });
 
-  it('should return empty array if no Australian addresses are found', async () => {
-    const mockApiResponse = {
-      data: {
-        results: [
-          {
-            address: {
-              freeformAddress: '456 Fake Road, Auckland, NZ',
-              country: 'New Zealand',
-              countryCode: 'NZL',
-              municipality: 'Auckland',
-            },
-            position: {
-              lat: -36.8485,
-              lon: 174.7633,
-            },
-          },
-        ],
-      },
-    };
+  describe('#getSuggestions', () => {
+    let service: AddressService;
 
-    mockedAxios.get.mockResolvedValue(mockApiResponse);
+    beforeEach(() => {
+      service = new AddressService(validOptions);
+    });
 
-    const result = await addressService.getSuggestions('456');
-    expect(result).toEqual([]);
+    it('should throw if query is empty or invalid', async () => {
+      await expect(service.getSuggestions('')).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.getSuggestions(null as any)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.getSuggestions('    ')).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should throw if TomTom API call fails', async () => {
+      mockedGetSuggestion.mockRejectedValue(new Error('TomTom API failure'));
+
+      await expect(service.getSuggestions('Melbourne')).rejects.toThrow(
+        InternalServerErrorException,
+      );
+      expect(mockedGetSuggestion).toHaveBeenCalled();
+    });
+
+    it('should throw if TomTom response is invalid or null', async () => {
+      mockedGetSuggestion.mockResolvedValue(null);
+
+      await expect(service.getSuggestions('Melbourne')).rejects.toThrow(
+        InternalServerErrorException,
+      );
+
+      mockedGetSuggestion.mockResolvedValue({ data: null });
+      await expect(service.getSuggestions('Melbourne')).rejects.toThrow(
+        InternalServerErrorException,
+      );
+
+      mockedGetSuggestion.mockResolvedValue({ data: { results: null } });
+      await expect(service.getSuggestions('Melbourne')).rejects.toThrow(
+        InternalServerErrorException,
+      );
+    });
+
+    it('should filter non-AUS addresses and map valid results', async () => {
+      mockedGetSuggestion.mockResolvedValue(mockApiResultValid);
+      mockedMapAddress.mockReturnValue(mappedResultValid);
+
+      const results = await service.getSuggestions('Valid Query');
+
+      expect(results).toEqual([mappedResultValid]);
+      expect(mockedGetSuggestion).toHaveBeenCalledWith(
+        validOptions,
+        'Valid Query',
+      );
+      expect(mockedMapAddress).toHaveBeenCalledTimes(1);
+    });
+
+    it('should filter when the full address is empty after mapping', async () => {
+      mockedGetSuggestion.mockResolvedValue(mockApiResultValid);
+      mockedMapAddress.mockReturnValue(mappedResultInvalid);
+
+      const results = await service.getSuggestions('Invalid Query');
+
+      expect(results).toEqual([]);
+      expect(mockedGetSuggestion).toHaveBeenCalledWith(
+        validOptions,
+        'Invalid Query',
+      );
+      expect(mockedMapAddress).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return empty array if no valid Australian addresses', async () => {
+      mockedGetSuggestion.mockResolvedValue(mockApiResultInvalid);
+
+      const results = await service.getSuggestions('Invalid Query');
+      expect(results).toEqual([]);
+    });
   });
 });

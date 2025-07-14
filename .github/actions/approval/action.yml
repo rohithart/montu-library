@@ -1,0 +1,21 @@
+name: Approval
+description: Approval gate for pipeline
+inputs:
+  GH_TOKEN:
+    description: 'GitHub token'
+  TITLE:
+    description: 'Approval gate title'
+  BODY:
+    description: 'Approval gate description'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: trstringer/manual-approval@v1
+      with:
+        issue-title: ${{ inputs.TITLE }}
+        issue-body: ${{ inputs.BODY }}
+        secret: ${{ inputs.GH_TOKEN }}
+        minimum-approvals: 1
+        timeout-minutes: 5
+        approvers: grocstock-approvers

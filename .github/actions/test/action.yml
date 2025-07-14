@@ -1,0 +1,41 @@
+name: 'Test application with coverage'
+description: 'Test application and upload coverage'
+inputs:
+  GH_TOKEN:
+    description: 'GitHub token'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run Unit Tests
+      run: yarn test:cov
+      shell: bash
+      continue-on-error: true
+
+    - name: Upload coverage artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: code-coverage
+        path: coverage
+
+    - name: Upload report artifact
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-reports
+        path: reports
+
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: Test reports
+        path: reports/test-*.xml
+        reporter: jest-junit
+
+    - name: CodeCov Report
+      uses: codecov/codecov-action@v4
+      if: always()
+      env:
+        CODECOV_TOKEN: ${{ inputs.GH_TOKEN }}

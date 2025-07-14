@@ -18,4 +18,3 @@ runs:
         secret: ${{ inputs.GH_TOKEN }}
         minimum-approvals: 1
         timeout-minutes: 5
-        approvers: grocstock-approvers

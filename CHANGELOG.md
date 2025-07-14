@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/rohithart/montu-library/compare/v1.0.0...v1.0.1) (2025-07-14)
+
+
+### Bug Fixes
+
+* Disable GH actions ([3a41702](https://github.com/rohithart/montu-library/commit/3a417029946b76da175b2af86b95917d6a7e1d59))
+* tsconfig ([0aa335d](https://github.com/rohithart/montu-library/commit/0aa335d64ab851a9b778043906d675ad1f0ec089))
+
 # 1.0.0 (2025-07-14)
 
 

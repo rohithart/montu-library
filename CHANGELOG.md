@@ -1,3 +1,13 @@
+## [1.0.4](https://github.com/rohithart/montu-library/compare/v1.0.3...v1.0.4) (2025-07-14)
+
+
+### Bug Fixes
+
+* Cleanup tests ([844f155](https://github.com/rohithart/montu-library/commit/844f155d987da68beecf605869f3af7c43a81450))
+* eslint for tests ([6caaa01](https://github.com/rohithart/montu-library/commit/6caaa01d071ca987c3deacf5a2e22bb183ce1064))
+* Types ([a7e7f1f](https://github.com/rohithart/montu-library/commit/a7e7f1fabb5de48924e4d82b65db0fe8e795fe3c))
+* Update ReadMe ([a185707](https://github.com/rohithart/montu-library/commit/a18570743574a35f35d906c6386398a504a6564e))
+
 ## [1.0.3](https://github.com/rohithart/montu-library/compare/v1.0.2...v1.0.3) (2025-07-14)
 
 

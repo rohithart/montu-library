@@ -10,6 +10,8 @@ This is a NestJS library for Montu with their 3rd party integrations.
 - Result set has been set to 5 in the below example, which can be updated as per business requirement.
 - Basic validations on edge cases has been considered, however may change according to business requirements.
 - GH actions has been setup to semantically release versions of the library.
+- GH actions has to be triggered manually, this can be set to run on PR or specific branches depending on business needs.
+- An approval gate has been set in place, which will create a GH issue, which has to be addressed to release new version.
 - `GH_TOKEN` for `.npmrc` file is not provided for security reasons. This has to be setup as environment variable in the service side.
 
 ### Build

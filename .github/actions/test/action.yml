@@ -36,7 +36,7 @@ runs:
       with:
         name: Test Reports
         path: reports/test-results.xml
-        reporter: default
+        reporter: jest-junit
 
     - name: CodeCov Report
       uses: codecov/codecov-action@v4

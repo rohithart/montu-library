@@ -34,10 +34,13 @@ runs:
       uses: test-summary/action@v2
       if: always()
       with:
-        path: reports/test-results.xml
+        paths: reports/test-results.xml
 
     - name: CodeCov Report
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       if: always()
       env:
         CODECOV_TOKEN: ${{ inputs.GH_TOKEN }}
+      with:
+        files: coverage/clover.xml
+

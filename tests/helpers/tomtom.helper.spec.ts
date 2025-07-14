@@ -1,12 +1,13 @@
 import axios from 'axios';
+import { vi,  expect, test, describe } from 'vitest';
 import {
   getSuggestionFromTomTom,
   mapAddressFromTomTom,
 } from '../../src/helpers/tomtom.helper';
 import { AddressModuleOptions } from '../../src/modules/address/AddressModuleOptions';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+vi.mock('axios');
+const mockedAxios = axios as unknown as vi.Mocked<typeof axios>;
 
 describe('TomTom helper', () => {
   const options: AddressModuleOptions = {
@@ -16,7 +17,7 @@ describe('TomTom helper', () => {
   };
 
   describe('#getSuggestionFromTomTom', () => {
-    it('should call TomTom API with correct parameters', async () => {
+    test('should call TomTom API with correct parameters', async () => {
       const mockResponse = { data: { results: [] } };
       mockedAxios.get.mockResolvedValue(mockResponse);
 
@@ -40,20 +41,20 @@ describe('TomTom helper', () => {
   });
 
   describe('#mapAddressFromTomTom', () => {
-    it('should return undefined when input is null', () => {
+    test('should return undefined when input is null', () => {
     expect(mapAddressFromTomTom(null)).toBeUndefined();
   });
 
-  it('should return undefined when input is undefined', () => {
+  test('should return undefined when input is undefined', () => {
     expect(mapAddressFromTomTom(undefined)).toBeUndefined();
   });
 
-  it('should return undefined when address property is missing', () => {
+  test('should return undefined when address property is missing', () => {
     const incompleteResult = { position: { lat: 1, lon: 2 } };
     expect(mapAddressFromTomTom(incompleteResult)).toBeUndefined();
   });
 
-  it('should return undefined when position property is missing', () => {
+  test('should return undefined when position property is missing', () => {
     const incompleteResult = {
       address: {
         freeformAddress: 'Some Address',
@@ -64,11 +65,11 @@ describe('TomTom helper', () => {
     expect(mapAddressFromTomTom(incompleteResult)).toBeUndefined();
   });
 
-  it('should return undefined when result is an empty object', () => {
+  test('should return undefined when result is an empty object', () => {
     expect(mapAddressFromTomTom({})).toBeUndefined();
   });
 
-    it('should map TomTom API result correctly', () => {
+    test('should map TomTom API result correctly', () => {
       const apiResult = {
         address: {
           freeformAddress: '123 Test Street, Sydney',

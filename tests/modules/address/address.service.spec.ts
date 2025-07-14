@@ -2,14 +2,15 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { vi,  expect, test, afterEach, describe, beforeEach } from 'vitest';
 import { AddressService } from '../../../src/modules/address/address.service';
 import { AddressModuleOptions } from '../../../src/modules/address/AddressModuleOptions';
 import * as tomtomHelper from '../../../src/helpers/tomtom.helper';
 
-jest.mock('../../../src/helpers/tomtom.helper');
+vi.mock('../../../src/helpers/tomtom.helper');
 
-const mockedGetSuggestion = tomtomHelper.getSuggestionFromTomTom as jest.Mock;
-const mockedMapAddress = tomtomHelper.mapAddressFromTomTom as jest.Mock;
+const mockedGetSuggestion = tomtomHelper.getSuggestionFromTomTom;
+const mockedMapAddress = tomtomHelper.mapAddressFromTomTom;
 
 describe('AddressService', () => {
   const validOptions: AddressModuleOptions = {
@@ -57,23 +58,23 @@ describe('AddressService', () => {
   };
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('constructor', () => {
-    it('should throw if apiKey is missing', () => {
+    test('should throw if apiKey is missing', () => {
       expect(() => new AddressService({ ...validOptions, apiKey: '' })).toThrow(
         BadRequestException,
       );
     });
 
-    it('should throw if countrySet is missing', () => {
+    test('should throw if countrySet is missing', () => {
       expect(
         () => new AddressService({ ...validOptions, countrySet: '' }),
       ).toThrow(BadRequestException);
     });
 
-    it('should throw if limit is missing or not a number', () => {
+    test('should throw if limit is missing or not a number', () => {
       expect(
         () => new AddressService({ ...validOptions, limit: '' as any }),
       ).toThrow(BadRequestException);
@@ -90,7 +91,7 @@ describe('AddressService', () => {
       service = new AddressService(validOptions);
     });
 
-    it('should throw if query is empty or invalid', async () => {
+    test('should throw if query is empty or invalid', async () => {
       await expect(service.getSuggestions('')).rejects.toThrow(
         BadRequestException,
       );
@@ -102,7 +103,7 @@ describe('AddressService', () => {
       );
     });
 
-    it('should throw if TomTom API call fails', async () => {
+    test('should throw if TomTom API call fails', async () => {
       mockedGetSuggestion.mockRejectedValue(new Error('TomTom API failure'));
 
       await expect(service.getSuggestions('Melbourne')).rejects.toThrow(
@@ -111,7 +112,7 @@ describe('AddressService', () => {
       expect(mockedGetSuggestion).toHaveBeenCalled();
     });
 
-    it('should throw if TomTom response is invalid or null', async () => {
+    test('should throw if TomTom response is invalid or null', async () => {
       mockedGetSuggestion.mockResolvedValue(null);
 
       await expect(service.getSuggestions('Melbourne')).rejects.toThrow(
@@ -129,7 +130,7 @@ describe('AddressService', () => {
       );
     });
 
-    it('should filter non-AUS addresses and map valid results', async () => {
+    test('should filter non-AUS addresses and map valid results', async () => {
       mockedGetSuggestion.mockResolvedValue(mockApiResultValid);
       mockedMapAddress.mockReturnValue(mappedResultValid);
 
@@ -143,7 +144,7 @@ describe('AddressService', () => {
       expect(mockedMapAddress).toHaveBeenCalledTimes(1);
     });
 
-    it('should filter when the full address is empty after mapping', async () => {
+    test('should filter when the full address is empty after mapping', async () => {
       mockedGetSuggestion.mockResolvedValue(mockApiResultValid);
       mockedMapAddress.mockReturnValue(mappedResultInvalid);
 
@@ -157,7 +158,7 @@ describe('AddressService', () => {
       expect(mockedMapAddress).toHaveBeenCalledTimes(1);
     });
 
-    it('should return empty array if no valid Australian addresses', async () => {
+    test('should return empty array if no valid Australian addresses', async () => {
       mockedGetSuggestion.mockResolvedValue(mockApiResultInvalid);
 
       const results = await service.getSuggestions('Invalid Query');

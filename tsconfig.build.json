@@ -8,10 +8,11 @@
     "outDir": "./dist",
     "module": "CommonJS",
     "target": "ES6",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "declaration": true,
     "esModuleInterop": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+     "types": ["vitest/globals"]
   },
   "include": ["src/**/*.ts"]
 }

@@ -2,7 +2,7 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { vi,  expect, test, afterEach, describe, beforeEach } from 'vitest';
+import { vi, expect, test, afterEach, describe, beforeEach } from 'vitest';
 import { AddressService } from '../../../src/modules/address/address.service';
 import { AddressModuleOptions } from '../../../src/modules/address/AddressModuleOptions';
 import * as tomtomHelper from '../../../src/helpers/tomtom.helper';
@@ -103,66 +103,106 @@ describe('AddressService', () => {
       );
     });
 
-    test('should throw if TomTom API call fails', async () => {
+    describe('when TomTom API call fails', async () => {
       mockedGetSuggestion.mockRejectedValue(new Error('TomTom API failure'));
 
-      await expect(service.getPOISearchResults('Melbourne')).rejects.toThrow(
-        InternalServerErrorException,
-      );
-      expect(mockedGetSuggestion).toHaveBeenCalled();
+      test('should throw if TomTom API call fails', async () => {
+        await expect(service.getPOISearchResults('Melbourne')).rejects.toThrow(
+          InternalServerErrorException,
+        );
+        expect(mockedGetSuggestion).toHaveBeenCalled();
+      });
     });
 
-    test('should throw if TomTom response is invalid or null', async () => {
+    describe('when TomTom response is null', async () => {
       mockedGetSuggestion.mockResolvedValue(null);
 
-      await expect(service.getPOISearchResults('Melbourne')).rejects.toThrow(
-        InternalServerErrorException,
-      );
+      test('should throw an exception', async () => {
+        await expect(service.getPOISearchResults('Melbourne')).rejects.toThrow(
+          InternalServerErrorException,
+        );
+      });
+    });
 
+    describe('when TomTom response is has data which is null', async () => {
       mockedGetSuggestion.mockResolvedValue({ data: null });
-      await expect(service.getPOISearchResults('Melbourne')).rejects.toThrow(
-        InternalServerErrorException,
-      );
+      test('should throw an exception', async () => {
+        await expect(service.getPOISearchResults('Melbourne')).rejects.toThrow(
+          InternalServerErrorException,
+        );
+      });
+    });
 
+    describe('when TomTom response data.result is null', async () => {
       mockedGetSuggestion.mockResolvedValue({ data: { results: null } });
-      await expect(service.getPOISearchResults('Melbourne')).rejects.toThrow(
-        InternalServerErrorException,
-      );
+      test('should throw an exception', async () => {
+        await expect(service.getPOISearchResults('Melbourne')).rejects.toThrow(
+          InternalServerErrorException,
+        );
+      });
     });
 
-    test('should filter non-AUS addresses and map valid results', async () => {
-      mockedGetSuggestion.mockResolvedValue(mockApiResultValid);
-      mockedMapAddress.mockReturnValue(mappedResultValid);
+    describe('when the results are valid', () => {
+      let results;
 
-      const results = await service.getPOISearchResults('Valid Query');
+      beforeEach(async () => {
+        mockedGetSuggestion.mockResolvedValue(mockApiResultValid);
+        mockedMapAddress.mockReturnValue(mappedResultValid);
+        results = await service.getPOISearchResults('Valid Query');
+      });
 
-      expect(results).toEqual([mappedResultValid]);
-      expect(mockedGetSuggestion).toHaveBeenCalledWith(
-        validOptions,
-        'Valid Query',
-      );
-      expect(mockedMapAddress).toHaveBeenCalledTimes(1);
+      test('should filter non-AUS addresses', () => {
+        expect(results).toEqual([mappedResultValid]);
+      });
+
+      test('should call the search function', () => {
+        expect(mockedGetSuggestion).toHaveBeenCalledWith(
+          validOptions,
+          'Valid Query',
+        );
+      });
+
+      test('should call the mapping function', () => {
+        expect(mockedMapAddress).toHaveBeenCalledTimes(1);
+      });
     });
 
-    test('should filter when the full address is empty after mapping', async () => {
-      mockedGetSuggestion.mockResolvedValue(mockApiResultValid);
-      mockedMapAddress.mockReturnValue(mappedResultInvalid);
+    describe('when the results are invalid', () => {
+      let results;
 
-      const results = await service.getPOISearchResults('Invalid Query');
+      beforeEach(async () => {
+        mockedGetSuggestion.mockResolvedValue(mockApiResultValid);
+        mockedMapAddress.mockReturnValue(mappedResultInvalid);
+        results = await service.getPOISearchResults('Invalid Query');
+      });
 
-      expect(results).toEqual([]);
-      expect(mockedGetSuggestion).toHaveBeenCalledWith(
-        validOptions,
-        'Invalid Query',
-      );
-      expect(mockedMapAddress).toHaveBeenCalledTimes(1);
+      test('should return no result', async () => {
+        expect(results).toEqual([]);
+      });
+
+      test('should call the search function', async () => {
+        expect(mockedGetSuggestion).toHaveBeenCalledWith(
+          validOptions,
+          'Invalid Query',
+        );
+      });
+
+      test('should call the mapping function', async () => {
+        expect(mockedMapAddress).toHaveBeenCalledTimes(1);
+      });
     });
 
-    test('should return empty array if no valid Australian addresses', async () => {
-      mockedGetSuggestion.mockResolvedValue(mockApiResultInvalid);
+    describe('when result has no valid Australian addresses', () => {
+      let results;
 
-      const results = await service.getPOISearchResults('Invalid Query');
-      expect(results).toEqual([]);
+      beforeEach(async () => {
+        mockedGetSuggestion.mockResolvedValue(mockApiResultInvalid);
+        results = await service.getPOISearchResults('Invalid Query');
+      });
+
+      test('should return empty array if no valid Australian addresses', async () => {
+        expect(results).toEqual([]);
+      });
     });
   });
 });

@@ -3,8 +3,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     environment: 'node',
-    reporters: ['json', 'default'],
-      outputFile: './test-output.json',
+    reporters: ['default', ['junit', { outputFile: 'reports/test-results.xml' }]],
     coverage: {
       provider: 'istanbul',
     },

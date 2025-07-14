@@ -17,5 +17,4 @@ runs:
         issue-body: ${{ inputs.BODY }}
         secret: ${{ inputs.GH_TOKEN }}
         minimum-approvals: 1
-        timeout-minutes: 5
-        approvers: rohithart@yahoo.com
+        approvers: rohithart

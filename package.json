@@ -71,5 +71,10 @@
     "ts-jest": "29.4.0",
     "ts-node": "10.9.2",
     "typescript": "5.8.3"
+  },
+  "exports": {
+    ".": {
+      "require": "./dist/index.js"
+    }
   }
 }

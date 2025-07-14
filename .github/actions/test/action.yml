@@ -23,9 +23,9 @@ runs:
         name: code-coverage
         path: coverage
 
-    - name: Upload report artifact
-      uses: actions/upload-artifact@v4
+    - name: Upload test report artifact
       if: always()
+      uses: actions/upload-artifact@v4
       with:
         name: test-reports
         path: reports
@@ -34,9 +34,9 @@ runs:
       uses: dorny/test-reporter@v1
       if: always()
       with:
-        name: Test reports
-        path: reports/test-*.xml
-        reporter: jest-junit
+        name: Test Reports
+        path: reports/test-results.xml
+        reporter: vitest
 
     - name: CodeCov Report
       uses: codecov/codecov-action@v4

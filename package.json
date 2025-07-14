@@ -7,7 +7,7 @@
   "readmeFilename": "README.md",
   "main": "index.js",
   "types": "index.d.ts",
-  "type": "module",
+  "type": "commonjs",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },

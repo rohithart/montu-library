@@ -36,7 +36,7 @@ runs:
       with:
         name: Test Reports
         path: reports/test-results.xml
-        reporter: junit
+        reporter: default
 
     - name: CodeCov Report
       uses: codecov/codecov-action@v4

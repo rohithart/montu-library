@@ -41,12 +41,18 @@ export class AddressService implements AddressProvider {
       );
     }
 
-    return response.data.results
-      .filter(
-        (result) => result?.address?.countryCode === this.options.countrySet,
-      )
-      .map((result) => mapAddressFromTomTom(result))
-      .filter((mapped) => !!mapped?.fullAddress);
+    return this.filterSearchResult(response.data.results);
+  }
+
+  private filterSearchResult(results: any[]) {
+    return results.reduce<AddressSuggestion[]>((acc, result) => {
+      if (result?.address?.countryCode !== this.options.countrySet) return acc;
+
+      const mapped = mapAddressFromTomTom(result);
+      if (mapped?.fullAddress) acc.push(mapped);
+
+      return acc;
+    }, []);
   }
 
   private validateOptions(): void {

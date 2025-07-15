@@ -1,3 +1,11 @@
+## [1.0.5](https://github.com/rohithart/montu-library/compare/v1.0.4...v1.0.5) (2025-07-15)
+
+
+### Bug Fixes
+
+* Clean ([b81d6f3](https://github.com/rohithart/montu-library/commit/b81d6f37668653033fbfbbae8de54b39e8db5abf))
+* Update AddressSuggestion ([a6970f6](https://github.com/rohithart/montu-library/commit/a6970f64127ae7ec7baa5f28231687572dac1460))
+
 ## [1.0.4](https://github.com/rohithart/montu-library/compare/v1.0.3...v1.0.4) (2025-07-14)
 
 

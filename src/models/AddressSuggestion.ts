@@ -1,7 +1,12 @@
 export interface AddressSuggestion {
   fullAddress: string;
+  countryCode: string;
   country: string;
-  municipality: string;
   latitude: number;
   longitude: number;
+  streetNumber?: string;
+  streetName?: string;
+  suburb?: string;
+  postcode?: string;
+  municipality?: string;
 }

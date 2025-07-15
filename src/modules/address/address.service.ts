@@ -49,7 +49,7 @@ export class AddressService implements AddressProvider {
       .filter((mapped) => !!mapped?.fullAddress);
   }
 
-  private validateOptions() {
+  private validateOptions(): void {
     const { apiKey, countrySet, limit } = this.options || {};
     if (!apiKey || typeof apiKey !== 'string' || apiKey.length === 0) {
       throw new BadRequestException(

@@ -5,6 +5,7 @@ import {
   mapAddressFromTomTom,
 } from '../../src/helpers/tomtom.helper';
 import { AddressModuleOptions } from '../../src/modules/address/AddressModuleOptions';
+import { AddressSuggestion } from '../../src/models/AddressSuggestion';
 
 vi.mock('axios');
 const mockedAxios = axios as unknown as vi.Mocked<typeof axios>;
@@ -76,7 +77,7 @@ describe('TomTom helper', () => {
       expect(mapAddressFromTomTom({})).toBeUndefined();
     });
 
-    describe('when the result is accurate', () => {
+    describe('when the result is partial', () => {
       const apiResult = {
         address: {
           freeformAddress: '123 Test Street, Sydney',
@@ -89,7 +90,8 @@ describe('TomTom helper', () => {
         },
       };
 
-      const mapped = mapAddressFromTomTom(apiResult);
+      const mapped: AddressSuggestion | undefined =
+        mapAddressFromTomTom(apiResult);
 
       test('should map TomTom API result correctly', () => {
         expect(mapped).toEqual({
@@ -98,6 +100,71 @@ describe('TomTom helper', () => {
           municipality: 'Sydney',
           latitude: -33.865143,
           longitude: 151.2099,
+        });
+      });
+    });
+
+    describe('when the result is accurate', () => {
+      const apiResult = {
+        type: 'Point Address',
+        id: '2taLq1tqNaEsvh6W9QSctg',
+        score: 4.8037905693,
+        address: {
+          streetNumber: '20',
+          streetName: 'Lomandra Drive',
+          municipalitySubdivision: 'Clayton South',
+          municipality: 'Melbourne',
+          countrySecondarySubdivision: 'Melbourne',
+          countrySubdivision: 'Victoria',
+          countrySubdivisionName: 'Victoria',
+          countrySubdivisionCode: 'VIC',
+          postalCode: '3169',
+          countryCode: 'AU',
+          country: 'Australia',
+          countryCodeISO3: 'AUS',
+          freeformAddress: '20 Lomandra Drive, Clayton South, VIC, 3169',
+          localName: 'Clayton South',
+        },
+        position: {
+          lat: -37.929547,
+          lon: 145.125674,
+        },
+        viewport: {
+          topLeftPoint: {
+            lat: -37.92865,
+            lon: 145.12453,
+          },
+          btmRightPoint: {
+            lat: -37.93045,
+            lon: 145.12681,
+          },
+        },
+        entryPoints: [
+          {
+            type: 'main',
+            position: {
+              lat: -37.92945,
+              lon: 145.12519,
+            },
+          },
+        ],
+      };
+
+      const mapped: AddressSuggestion | undefined =
+        mapAddressFromTomTom(apiResult);
+
+      test('should map TomTom API result correctly', () => {
+        expect(mapped).toEqual({
+          country: 'Australia',
+          countryCode: 'AU',
+          fullAddress: '20 Lomandra Drive, Clayton South, VIC, 3169',
+          latitude: -37.929547,
+          longitude: 145.125674,
+          municipality: 'Melbourne',
+          postcode: '3169',
+          streetName: 'Lomandra Drive',
+          streetNumber: '20',
+          suburb: 'Clayton South',
         });
       });
     });

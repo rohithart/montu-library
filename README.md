@@ -7,6 +7,7 @@ This is a NestJS library for Montu with their 3rd party integrations.
 - Only POI search has been implemented as a POC, other searches can be implemented.
 - Provider interface has been kept in place to extend to other platforms like Google Search.
 - If a `freeformAddress` is not found, address is not returned, this can be updated based on the requirement of the product for partial address.
+- Only minimum values from the results are mapped and has kept simple and might change according to business needs.
 - Result set has been set to 5 in the below example, which can be updated as per business requirement.
 - Basic validations on edge cases has been considered, however may change according to business requirements.
 - GH actions has been setup to semantically release versions of the library.

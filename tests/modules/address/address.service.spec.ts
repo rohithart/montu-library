@@ -5,6 +5,8 @@ import {
 import { vi, expect, test, afterEach, describe, beforeEach } from 'vitest';
 import { AddressService } from '../../../src/modules/address/address.service';
 import { AddressModuleOptions } from '../../../src/modules/address/AddressModuleOptions';
+import { AddressSuggestion } from '../../../src/models/AddressSuggestion';
+
 import * as tomtomHelper from '../../../src/helpers/tomtom.helper';
 
 vi.mock('../../../src/helpers/tomtom.helper');
@@ -42,9 +44,10 @@ describe('AddressService', () => {
     },
   };
 
-  const mappedResultValid = {
+  const mappedResultValid: AddressSuggestion = {
     fullAddress: 'Mapped Address',
     country: 'Australia',
+    countryCode: 'AU',
     municipality: 'Sydney',
     latitude: 1,
     longitude: 2,
@@ -164,6 +167,10 @@ describe('AddressService', () => {
 
       test('should call the mapping function', () => {
         expect(mockedMapAddress).toHaveBeenCalledTimes(1);
+      });
+
+      test('should return AUS result', () => {
+        expect(results[0].countryCode).toEqual('AU');
       });
     });
 
